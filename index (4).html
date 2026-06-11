@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Maia Máquinas — Despesas de Viagem</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif}
+body{background:#F0F4FB;min-height:100vh}
+#tela-login{position:fixed;inset:0;background:linear-gradient(135deg,#1F3864,#2E5FA3);display:flex;align-items:center;justify-content:center;padding:16px;z-index:9999}
+.login-box{background:#fff;border-radius:16px;padding:30px 24px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.login-logo{text-align:center;margin-bottom:22px}
+.login-logo h1{font-size:22px;font-weight:900;color:#1F3864}
+.login-logo p{font-size:11px;color:#888;margin-top:4px}
+.tabs{display:flex;border-radius:8px;overflow:hidden;border:1.5px solid #e8edf5;margin-bottom:18px}
+.tab{flex:1;padding:9px;background:#f7f9fc;border:none;font-size:12px;font-weight:700;color:#888;cursor:pointer}
+.tab.on{background:#1F3864;color:#fff}
+.painel{display:none}.painel.on{display:block}
+.campo{margin-bottom:12px}
+.campo label{display:block;font-size:10px;font-weight:700;color:#888;margin-bottom:4px}
+.campo input,.campo select{width:100%;padding:10px 12px;border:1.5px solid #bcc8dc;border-radius:7px;font-size:13px;color:#1a2540;background:#f7f9fc;outline:none}
+.campo input:focus{border-color:#2E5FA3;background:#fff}
+.btn-entrar{width:100%;padding:13px;border:none;border-radius:8px;font-size:14px;font-weight:800;cursor:pointer;background:#1F3864;color:#fff;margin-top:6px}
+.btn-entrar:hover{background:#2E5FA3}
+.aviso{margin-top:10px;padding:9px 12px;border-radius:6px;font-size:12px;font-weight:600;display:none;text-align:center}
+.aviso.ok{background:#e2efda;color:#217346;display:block}
+.aviso.er{background:#ffcccc;color:#c00000;display:block}
+.aviso.info{background:#d9e1f2;color:#1F3864;display:block}
+#app{display:none}
+.topbar{background:#1F3864;color:#fff;padding:11px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:100}
+.topbar h2{font-size:15px;font-weight:900}
+.topbar small{font-size:10px;opacity:.7;display:block}
+.tbr{margin-left:auto;display:flex;align-items:center;gap:8px}
+.uchip{background:rgba(255,255,255,.15);border-radius:20px;padding:4px 10px;font-size:10px;font-weight:700}
+.rbadge{background:#D4A017;border-radius:10px;padding:1px 6px;font-size:9px;font-weight:800;margin-left:4px}
+.sairbtn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:5px;padding:4px 10px;font-size:10px;font-weight:700;color:#fff;cursor:pointer}
+.nav{display:flex;background:#2E5FA3;overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nbtn{flex:1;min-width:52px;padding:8px 3px;background:none;border:none;border-bottom:3px solid transparent;color:rgba(255,255,255,.6);font-size:9px;font-weight:700;cursor:pointer;text-align:center;white-space:nowrap}
+.nbtn span{display:block;font-size:12px;font-weight:900}
+.nbtn.on{color:#fff;border-bottom-color:#D4A017}
+.nbtn.adm{display:none}
+.pg{display:none;padding:14px;max-width:700px;margin:0 auto}.pg.on{display:block}
+.card{background:#fff;border-radius:10px;box-shadow:0 2px 10px rgba(31,56,100,.1);margin-bottom:14px;overflow:hidden}
+.ctopo{background:#1F3864;color:#fff;padding:11px 14px;font-weight:700;font-size:12px}
+.ccorpo{padding:14px}
+.fl{display:block;font-size:10px;font-weight:700;color:#4a5870;margin-bottom:3px;margin-top:10px}
+.fl:first-child{margin-top:0}
+input[type=text],input[type=date],input[type=number],textarea,select{width:100%;padding:9px 11px;border:1.5px solid #bcc8dc;border-radius:7px;font-size:13px;color:#1a2540;background:#f7f9fc;outline:none}
+input:focus,textarea:focus,select:focus{border-color:#2E5FA3;background:#fff}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tog{display:flex;gap:5px;margin-top:3px}
+.togb{flex:1;padding:7px;border:1.5px solid #bcc8dc;border-radius:6px;background:#f7f9fc;font-size:12px;font-weight:700;cursor:pointer;text-align:center;color:#888}
+.togb.s{background:#e2efda;border-color:#70ad47;color:#375623}
+.togb.n{background:#ffcccc;border-color:#c00000;color:#c00000}
+.drow{background:#f7f9fc;border:1.5px solid #e8edf5;border-radius:8px;padding:11px;margin-bottom:8px}
+.drow.ac{border-color:#c00000;background:#fff5f5}
+.dhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.dlbl{font-weight:800;font-size:12px;color:#1F3864}
+.dtot{font-size:12px;font-weight:700;color:#217346}
+.lbadge{display:none;background:#ffcccc;color:#c00000;font-size:9px;font-weight:800;padding:2px 7px;border-radius:10px}
+.drow.ac .lbadge{display:inline}
+.drow.ac .dtot{color:#c00000}
+.mg{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.fzone{border:2px dashed #bcc8dc;border-radius:7px;padding:12px;text-align:center;cursor:pointer;background:#f7f9fc;margin-top:6px;position:relative}
+.fzone:hover{border-color:#2E5FA3;background:#ebf0fa}
+.fzone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.fzone .fi{font-size:22px}.fzone .ft{font-size:10px;color:#888;font-weight:600}
+.fts{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.fmini{position:relative;width:56px;height:56px;border-radius:5px;overflow:hidden;border:2px solid #e8edf5}
+.fmini img{width:100%;height:100%;object-fit:cover}
+.fdel{position:absolute;top:1px;right:1px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:16px;height:16px;font-size:10px;cursor:pointer}
+.pbadge{display:inline-block;background:#fff2cc;color:#7f4f00;font-size:9px;font-weight:800;padding:2px 8px;border-radius:10px;margin-left:6px}
+.stbl{width:100%;border-collapse:collapse}
+.stbl td{padding:8px 11px;border-bottom:1px solid #e8edf5;font-size:12px}
+.stbl .cat{color:#888}.stbl .val{text-align:right;font-weight:700;font-family:monospace;font-size:13px}
+.stbl .tot td{background:#1F3864;color:#fff;font-weight:800;font-size:14px}
+.btn{display:block;width:100%;padding:12px;border:none;border-radius:8px;font-size:14px;font-weight:800;cursor:pointer}
+.bp{background:#1F3864;color:#fff}.bp:hover{background:#2E5FA3}
+.bs{background:#d9e1f2;color:#1F3864}
+.bg_{background:#217346;color:#fff}
+.br_{background:#c00000;color:#fff}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.brow{display:flex;gap:8px;margin-top:14px}.brow .btn{flex:1}
+#sigc{border:2px solid #bcc8dc;border-radius:7px;background:#fff;touch-action:none;cursor:crosshair;display:block;width:100%}
+.siga{display:flex;gap:7px;margin-top:7px}
+.siga button{flex:1;padding:7px;border:1.5px solid #bcc8dc;border-radius:5px;background:#f7f9fc;font-size:11px;font-weight:700;cursor:pointer;color:#888}
+.sbox{border-radius:8px;padding:14px;text-align:center;margin-bottom:14px;display:none}
+.sbox.on{display:block}
+.sbox.ld{background:#d9e1f2;color:#1F3864}
+.sbox.ok{background:#e2efda;color:#217346}
+.sbox.er{background:#ffcccc;color:#c00000}
+.sico{font-size:32px;margin-bottom:6px}.smsg{font-size:13px;font-weight:700}.ssub{font-size:11px;margin-top:3px;opacity:.8}
+.addb{width:100%;padding:9px;border:2px dashed #bcc8dc;border-radius:7px;background:none;color:#888;font-size:12px;font-weight:700;cursor:pointer;margin-top:3px}
+.addb:hover{border-color:#2E5FA3;color:#2E5FA3;background:#ebf0fa}
+.nbadge{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#1F3864,#2E5FA3);color:#fff;border-radius:8px;padding:10px 16px;font-size:15px;font-weight:900;letter-spacing:1px;margin-bottom:14px}
+.chip{display:inline-block;border-radius:20px;padding:2px 10px;font-size:10px;font-weight:800}
+.chip.pending{background:#fff2cc;color:#7f4f00}
+.chip.approved{background:#e2efda;color:#217346}
+.chip.rejected{background:#ffcccc;color:#c00000}
+.rcard{background:#fff;border-radius:8px;border:1.5px solid #e8edf5;padding:12px;margin-bottom:8px;cursor:pointer}
+.rcard:hover{border-color:#4472C4;background:#ebf0fa}
+.rn{font-weight:900;font-size:13px;color:#1F3864}
+.ri{font-size:11px;color:#888;margin-top:2px}
+.lrow{padding:9px 0;border-bottom:1px solid #e8edf5;font-size:11px}
+.lrow:last-child{border:none}
+.la{font-weight:700;color:#1F3864}.lt{color:#888;font-size:10px;margin-top:2px}
+.acard{background:#fff;border-radius:10px;box-shadow:0 2px 10px rgba(31,56,100,.1);padding:18px;margin-bottom:14px}
+.anum{font-size:18px;font-weight:900;color:#1F3864;margin-bottom:3px}
+.ameta{font-size:11px;color:#888;margin-bottom:12px}
+.aln{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #e8edf5;font-size:12px}
+.aln:last-child{border:none}
+.abtns{display:flex;gap:8px;margin-top:12px}.abtns .btn{padding:10px;font-size:12px}
+.anota{width:100%;padding:9px;border:1.5px solid #bcc8dc;border-radius:7px;font-size:12px;margin-top:10px;min-height:60px;resize:vertical}
+.sbanner{border-radius:8px;padding:14px;margin-bottom:14px;border:1.5px solid}
+.sbanner.pending{background:#fff9ec;border-color:#f0c040;color:#7f4f00}
+.sbanner.approved{background:#f0fbf4;border-color:#70ad47;color:#217346}
+.sbanner.rejected{background:#fff0f0;border-color:#c00000;color:#c00000}
+.sbt{font-size:14px;font-weight:800;margin-bottom:4px}.sbs{font-size:12px;opacity:.85}
+@media(max-width:500px){.r2{grid-template-columns:1fr}.mg{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<div id="tela-login">
+  <div class="login-box">
+    <div class="login-logo">
+      <h1>MAIA MÁQUINAS</h1>
+      <p>Sistema de Despesas de Viagem Corporativa</p>
+    </div>
+    <div class="tabs">
+      <button class="tab on" onclick="aba('entrar')">Entrar</button>
+      <button class="tab" onclick="aba('cadastro')">Criar Conta</button>
+    </div>
+    <div class="painel on" id="p-entrar">
+      <div class="campo"><label>E-mail</label><input type="email" id="le" placeholder="seu@email.com"/></div>
+      <div class="campo"><label>Senha</label><input type="password" id="ls" placeholder="••••••••" onkeydown="if(event.key==='Enter')entrar()"/></div>
+      <button class="btn-entrar" onclick="entrar()">Entrar →</button>
+      <div class="aviso" id="av-login"></div>
+    </div>
+    <div class="painel" id="p-cad">
+      <div class="campo"><label>Nome completo</label><input type="text" id="cn" placeholder="João Silva"/></div>
+      <div class="campo"><label>E-mail corporativo</label><input type="email" id="ce" placeholder="joao@maiamaquinas.com.br"/></div>
+      <div class="campo"><label>Unidade</label>
+        <select id="cu"><option value="">Selecione...</option><option value="Araraquara">Araraquara</option><option value="Uberlândia">Uberlândia</option></select>
+      </div>
+      <div class="campo"><label>Senha (mín. 6 caracteres)</label><input type="password" id="cs" placeholder="••••••••"/></div>
+      <div class="campo"><label>Confirmar senha</label><input type="password" id="cs2" placeholder="••••••••" onkeydown="if(event.key==='Enter')cadastrar()"/></div>
+      <button class="btn-entrar" onclick="cadastrar()">Criar Conta →</button>
+      <div class="aviso" id="av-cad"></div>
+    </div>
+  </div>
+</div>
+
+<div id="app" style="display:none">
+  <div class="topbar">
+    <div><h2>MAIA MÁQUINAS</h2><small>Despesas de Viagem</small></div>
+    <div class="tbr">
+      <div class="uchip"><span id="tnome">—</span><span class="rbadge" id="ttipo">—</span></div>
+      <button class="sairbtn" onclick="sair()">Sair</button>
+    </div>
+  </div>
+  <div class="nav">
+    <button class="nbtn on" onclick="ir(0)"><span>①</span>Viagem</button>
+    <button class="nbtn" onclick="ir(1)"><span>②</span>Transp.</button>
+    <button class="nbtn" onclick="ir(2)"><span>③</span>Refei.</button>
+    <button class="nbtn" onclick="ir(3)"><span>④</span>Outras</button>
+    <button class="nbtn" onclick="ir(4)"><span>⑤</span>Resumo</button>
+    <button class="nbtn" onclick="ir(5)"><span>⑥</span>Enviar</button>
+    <button class="nbtn adm" onclick="ir(6)"><span>✓</span>Aprovar</button>
+    <button class="nbtn adm" onclick="ir(7)"><span>⚙</span>Config</button>
+    <button class="nbtn" onclick="ir(8)"><span>📋</span>Meus</button>
+  </div>
+
+  <div class="pg on" id="g0">
+    <div id="nwrap" style="display:none;margin-bottom:4px"></div>
+    <div class="card"><div class="ctopo">🗺️ Dados da Viagem</div><div class="ccorpo">
+      <label class="fl">Unidade *</label>
+      <select id="fu"><option value="">Selecione...</option><option value="Araraquara">Araraquara</option><option value="Uberlândia">Uberlândia</option></select>
+      <label class="fl">Nome do Colaborador *</label><input type="text" id="fn"/>
+      <label class="fl">Cliente / Destino *</label><input type="text" id="fc" placeholder="Ex.: Empresa ABC"/>
+      <div class="r2">
+        <div><label class="fl">Data de Saída *</label><input type="date" id="fsa"/></div>
+        <div><label class="fl">Data de Retorno *</label><input type="date" id="fre"/></div>
+      </div>
+      <label class="fl">Objetivo *</label><textarea id="fob" rows="2"></textarea>
+    </div></div>
+    <div class="brow"><button class="btn bp" onclick="ir(1)">Próximo: Transporte →</button></div>
+  </div>
+
+  <div class="pg" id="g1">
+    <div class="card"><div class="ctopo">🛣️ Pedágio</div><div class="ccorpo">
+      <label class="fl">Houve pedágio?</label>
+      <div class="tog" id="tped"><button class="togb" onclick="tog('tped','Sim','s')">✔ Sim</button><button class="togb" onclick="tog('tped','Não','n')">✖ Não</button></div>
+      <div id="ped-x" style="display:none">
+        <label class="fl">Pago pelo Sem Parar?</label>
+        <div class="tog" id="tsp"><button class="togb" onclick="tog('tsp','Sim','s')">✔ Sem Parar</button><button class="togb" onclick="tog('tsp','Não','n')">💵 Pago à parte</button></div>
+        <div id="ped-vw" style="display:none;margin-top:8px">
+          <label class="fl">Valor (R$)</label><input type="number" id="vped" placeholder="0,00" min="0" step="0.01"/>
+          <label class="fl">Comprovante *</label>
+          <div class="fzone" id="fz-ped"><input type="file" accept="image/*,application/pdf" multiple onchange="addF('ped',this)"/><div class="fi">📷</div><div class="ft">Tirar foto</div></div>
+          <div class="fts" id="ft-ped"></div>
+        </div>
+      </div>
+    </div></div>
+    <div class="card"><div class="ctopo">⛽ Combustível</div><div class="ccorpo">
+      <label class="fl">Houve abastecimento?</label>
+      <div class="tog" id="tcb"><button class="togb" onclick="tog('tcb','Sim','s')">✔ Sim</button><button class="togb" onclick="tog('tcb','Não','n')">✖ Não</button></div>
+      <div id="cb-x" style="display:none;margin-top:8px">
+        <label class="fl">Valor (R$)</label><input type="number" id="vcb" placeholder="0,00" min="0" step="0.01"/>
+        <label class="fl">Comprovante *</label>
+        <div class="fzone" id="fz-cb"><input type="file" accept="image/*,application/pdf" multiple onchange="addF('cb',this)"/><div class="fi">📷</div><div class="ft">Tirar foto</div></div>
+        <div class="fts" id="ft-cb"></div>
+      </div>
+    </div></div>
+    <div class="brow"><button class="btn bs" onclick="ir(0)">← Voltar</button><button class="btn bp" onclick="ir(2)">Próximo →</button></div>
+  </div>
+
+  <div class="pg" id="g2">
+    <div class="card"><div class="ctopo">🍽️ Refeições — Limite R$ 120,00/dia</div>
+    <div class="ccorpo" id="dc"></div>
+    <div style="padding:0 14px 14px"><button class="addb" onclick="addDia()">+ Adicionar dia</button></div></div>
+    <div class="brow"><button class="btn bs" onclick="ir(1)">← Voltar</button><button class="btn bp" onclick="ir(3)">Próximo →</button></div>
+  </div>
+
+  <div class="pg" id="g3">
+    <div class="card"><div class="ctopo">🏨 Estadia<span class="pbadge">⏳ Pendente</span></div><div class="ccorpo">
+      <div class="tog" id="test"><button class="togb" onclick="tog('test','Sim','s')">✔ Sim</button><button class="togb" onclick="tog('test','Não','n')">✖ Não</button></div>
+      <div id="est-x" style="display:none">
+        <label class="fl">Valor (R$)</label><input type="number" id="vest" placeholder="0,00" min="0" step="0.01"/>
+        <label class="fl">Observação</label><input type="text" id="oest" placeholder="Hotel, cidade..."/>
+        <label class="fl">Comprovante *</label>
+        <div class="fzone" id="fz-est"><input type="file" accept="image/*,application/pdf" multiple onchange="addF('est',this)"/><div class="fi">📷</div><div class="ft">Nota/recibo</div></div>
+        <div class="fts" id="ft-est"></div>
+      </div>
+    </div></div>
+    <div class="card"><div class="ctopo">🅿️ Estacionamento<span class="pbadge">⏳ Pendente</span></div><div class="ccorpo">
+      <div class="tog" id="tepc"><button class="togb" onclick="tog('tepc','Sim','s')">✔ Sim</button><button class="togb" onclick="tog('tepc','Não','n')">✖ Não</button></div>
+      <div id="epc-x" style="display:none">
+        <label class="fl">Valor (R$)</label><input type="number" id="vepc" placeholder="0,00" min="0" step="0.01"/>
+        <label class="fl">Comprovante *</label>
+        <div class="fzone" id="fz-epc"><input type="file" accept="image/*,application/pdf" multiple onchange="addF('epc',this)"/><div class="fi">📷</div><div class="ft">Foto</div></div>
+        <div class="fts" id="ft-epc"></div>
+      </div>
+    </div></div>
+    <div class="card"><div class="ctopo">👕 Lavanderia<span class="pbadge">⏳ Pendente</span></div><div class="ccorpo">
+      <div class="tog" id="tlav"><button class="togb" onclick="tog('tlav','Sim','s')">✔ Sim</button><button class="togb" onclick="tog('tlav','Não','n')">✖ Não</button></div>
+      <div id="lav-x" style="display:none">
+        <label class="fl">Valor (R$)</label><input type="number" id="vlav" placeholder="0,00" min="0" step="0.01"/>
+        <label class="fl">Comprovante *</label>
+        <div class="fzone" id="fz-lav"><input type="file" accept="image/*,application/pdf" multiple onchange="addF('lav',this)"/><div class="fi">📷</div><div class="ft">Foto</div></div>
+        <div class="fts" id="ft-lav"></div>
+      </div>
+    </div></div>
+    <div class="card"><div class="ctopo">📎 Outras<span class="pbadge">⏳ Pendente</span></div>
+    <div class="ccorpo" id="ec"></div>
+    <div style="padding:0 14px 14px"><button class="addb" onclick="addExt()">+ Adicionar despesa</button></div></div>
+    <div class="brow"><button class="btn bs" onclick="ir(2)">← Voltar</button><button class="btn bp" onclick="ir(4)">Próximo →</button></div>
+  </div>
+
+  <div class="pg" id="g4">
+    <div class="card"><div class="ctopo">📊 Resumo</div><div class="ccorpo">
+      <div id="ri" style="margin-bottom:10px;font-size:12px;color:#888"></div>
+      <table class="stbl"><tbody id="rb"></tbody></table>
+    </div></div>
+    <div id="abox" style="display:none" class="card"><div class="ctopo" style="background:#c00000">⚠️ Dias acima do limite</div><div class="ccorpo" id="abody" style="font-size:12px"></div></div>
+    <div class="brow"><button class="btn bs" onclick="ir(3)">← Voltar</button><button class="btn bp" onclick="ir(5)">Próximo →</button></div>
+  </div>
+
+  <div class="pg" id="g5">
+    <div class="card"><div class="ctopo">✍️ Assinatura</div><div class="ccorpo">
+      <p style="font-size:11px;color:#888;margin-bottom:8px">Declaro que as despesas são verdadeiras e relacionadas à viagem corporativa.</p>
+      <canvas id="sigc" width="600" height="140"></canvas>
+      <div class="siga"><button onclick="lsig()">🗑 Limpar</button><button onclick="nsig()">✍ Usar nome</button></div>
+    </div></div>
+    <div class="sbox" id="sb"><div class="sico" id="si"></div><div class="smsg" id="sm"></div><div class="ssub" id="ss"></div></div>
+    <div class="card"><div class="ctopo">📤 Envio</div><div class="ccorpo">
+      <div style="background:#d9e1f2;border-radius:7px;padding:10px;font-size:12px;font-weight:700;color:#1F3864">📧 Gestor: adm02@maiamaquinas.com.br</div>
+      <p style="font-size:11px;color:#888;margin-top:6px">Após enviar, acompanhe o status em "📋 Meus".</p>
+    </div></div>
+    <div class="brow"><button class="btn bs" onclick="ir(4)">← Voltar</button><button class="btn bg_" id="benv" onclick="enviar()">📨 Enviar ao Gestor</button></div>
+  </div>
+
+  <div class="pg" id="g6">
+    <div style="background:linear-gradient(135deg,#1F3864,#2E5FA3);border-radius:10px;padding:14px;color:#fff;margin-bottom:14px">
+      <div style="font-weight:900;font-size:14px;margin-bottom:4px">🔐 Painel de Aprovação</div>
+      <div style="font-size:11px;opacity:.8">Acesso restrito</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+      <button class="btn bs" style="width:auto;padding:7px 14px;font-size:11px" onclick="loadAprv('pending')">⏳ Pendentes</button>
+      <button class="btn bs" style="width:auto;padding:7px 14px;font-size:11px" onclick="loadAprv('approved')">✅ Aprovados</button>
+      <button class="btn bs" style="width:auto;padding:7px 14px;font-size:11px" onclick="loadAprv('rejected')">❌ Reprovados</button>
+      <button class="btn bs" style="width:auto;padding:7px 14px;font-size:11px" onclick="loadAprv('all')">📋 Todos</button>
+    </div>
+    <div id="laprv"></div>
+  </div>
+
+  <div class="pg" id="g7">
+    <div class="card"><div class="ctopo">⚙️ Configurações</div><div class="ccorpo">
+      <div style="background:#fff2cc;color:#7f4f00;border-radius:7px;padding:10px;font-size:11px;font-weight:600;margin-bottom:10px">Acesso restrito — somente adm02@maiamaquinas.com.br</div>
+      <label class="fl">E-mail Gestor (fixo)</label><input type="email" value="adm02@maiamaquinas.com.br" readonly style="background:#f0f4fb;color:#888;cursor:not-allowed"/>
+      <label class="fl">EmailJS — Public Key</label><input type="text" id="cpk" placeholder="Cole aqui"/>
+      <label class="fl">EmailJS — Service ID</label><input type="text" id="csv" placeholder="service_abc123"/>
+      <label class="fl">EmailJS — Template ID</label><input type="text" id="ctp" placeholder="template_xyz789"/>
+    </div></div>
+    <div class="card"><div class="ctopo">👥 Colaboradores</div><div class="ccorpo" id="lusr"></div></div>
+    <button class="btn bp" onclick="salvarCfg()">💾 Salvar</button>
+  </div>
+
+  <div class="pg" id="g8">
+    <div class="card"><div class="ctopo">📋 Meus Relatórios</div><div class="ccorpo" id="lmeus"></div></div>
+  </div>
+</div>
+
+<script>
+// CONFIG SUPABASE
+const SBU='https://lafucrwcmncoqdtajnnq.supabase.co';
+const SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxhZnVjcndjbW5jb3FkdGFqbm5xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExNzkyMjcsImV4cCI6MjA5Njc1NTIyN30.74K_YpZGeKQa0zH3DxNcbv3Al0jW-gwjVsQ5ooeV0pE';
+const ADMIN='adm02@maiamaquinas.com.br';
+const LIM=120;
+let db=null;
+
+// Carrega Supabase de forma segura
+function loadSB(){
+  return new Promise(resolve=>{
+    if(db){resolve(true);return;}
+    const s=document.createElement('script');
+    s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+    s.onload=()=>{
+      try{db=supabase.createClient(SBU,SBK);resolve(true);}
+      catch(e){resolve(false);}
+    };
+    s.onerror=()=>resolve(false);
+    document.head.appendChild(s);
+  });
+}
+
+function h(s){let x=5381;for(let i=0;i<s.length;i++)x=((x<<5)+x)^s.charCodeAt(i);return(x>>>0).toString(36)+s.length.toString(36)+s.charCodeAt(0).toString(36)}
+function isAdm(e){return e&&e.toLowerCase()===ADMIN.toLowerCase()}
+function fdt(i){if(!i)return'—';try{return new Date(i).toLocaleString('pt-BR')}catch{return i}}
+function fd(i){if(!i)return'—';try{return new Date(i+'T00:00:00').toLocaleDateString('pt-BR')}catch{return i}}
+function now(){return new Date().toISOString()}
+function gv(i){return parseFloat(document.getElementById(i)?.value)||0}
+function sess(){try{return JSON.parse(sessionStorage.getItem('mm_u')||'null')}catch{return null}}
+function setSess(u){sessionStorage.setItem('mm_u',JSON.stringify(u))}
+function clrSess(){sessionStorage.removeItem('mm_u')}
+function aviso(id,tipo,txt){const e=document.getElementById(id);e.className='aviso '+tipo;e.textContent=txt}
+function aba(t){
+  document.querySelectorAll('.tab').forEach((x,i)=>x.classList.toggle('on',(i===0&&t==='entrar')||(i===1&&t==='cadastro')));
+  document.getElementById('p-entrar').classList.toggle('on',t==='entrar');
+  document.getElementById('p-cad').classList.toggle('on',t==='cadastro');
+}
+
+async function entrar(){
+  const email=document.getElementById('le').value.trim().toLowerCase();
+  const senha=document.getElementById('ls').value;
+  if(!email||!senha){aviso('av-login','er','Preencha e-mail e senha.');return}
+  if(isAdm(email)){
+    const sp=localStorage.getItem('mm_ap');
+    if(h(senha)!==(sp||h('Maia@2025'))&&senha!=='Maia@2025'){aviso('av-login','er','Senha incorreta. Use: Maia@2025');return}
+    setSess({email,nome:'Administrador',role:'admin',unidade:'Geral'});
+    iniciar();return;
+  }
+  aviso('av-login','info','🔄 Verificando...');
+  const ok=await loadSB();
+  if(!ok){aviso('av-login','er','Erro ao conectar. Verifique sua internet.');return}
+  try{
+    const{data,error}=await db.from('mm_users').select('*').eq('email',email).single();
+    if(error||!data){aviso('av-login','er','E-mail não cadastrado. Crie uma conta.');return}
+    if(h(senha)!==data.pass_hash){aviso('av-login','er','Senha incorreta.');return}
+    setSess({email,nome:data.name,role:'user',unidade:data.unit});
+    iniciar();
+  }catch(e){aviso('av-login','er','Erro de conexão: '+e.message);console.error(e);}
+}
+
+async function cadastrar(){
+  const nome=document.getElementById('cn').value.trim();
+  const email=document.getElementById('ce').value.trim().toLowerCase();
+  const unid=document.getElementById('cu').value;
+  const s=document.getElementById('cs').value;
+  const s2=document.getElementById('cs2').value;
+  if(!nome||!email||!unid||!s||!s2){aviso('av-cad','er','Preencha todos os campos.');return}
+  if(s.length<6){aviso('av-cad','er','Senha: mínimo 6 caracteres.');return}
+  if(s!==s2){aviso('av-cad','er','Senhas não coincidem.');return}
+  if(isAdm(email)){aviso('av-cad','er','E-mail reservado.');return}
+  aviso('av-cad','info','🔄 Criando conta...');
+  const ok=await loadSB();
+  if(!ok){aviso('av-cad','er','Erro ao conectar.');return}
+  try{
+    const{error}=await db.from('mm_users').insert({email,name:nome,pass_hash:h(s),unit:unid,role:'user'});
+    if(error){
+      aviso('av-cad','er',error.code==='23505'?'E-mail já cadastrado.':'Erro: '+error.message);return;
+    }
+    aviso('av-cad','ok','✅ Conta criada! Faça login.');
+    setTimeout(()=>{aba('entrar');document.getElementById('le').value=email;},1500);
+  }catch(e){aviso('av-cad','er','Erro: '+e.message);console.error(e);}
+}
+
+function sair(){clrSess();location.reload()}
+
+function iniciar(){
+  const u=sess();if(!u)return;
+  document.getElementById('tela-login').style.display='none';
+  document.getElementById('app').style.display='';
+  document.getElementById('tnome').textContent=u.nome.split(' ')[0];
+  document.getElementById('ttipo').textContent=u.role==='admin'?'👑 Admin':'👤 '+u.unidade;
+  if(u.role==='admin'){document.querySelectorAll('.adm').forEach(e=>e.style.display='');loadCfg();loadUsrs();}
+  else{document.getElementById('fn').value=u.nome;const s=document.getElementById('fu');for(let o of s.options)if(o.value===u.unidade){o.selected=true;break}}
+  initSig();
+  if(!document.getElementById('dc').children.length)addDia();
+  if(!document.getElementById('ec').children.length)addExt();
+}
+
+// NAV
+function ir(n){
+  const u=sess();
+  if((n===6||n===7)&&u?.role!=='admin')return;
+  document.querySelectorAll('.pg').forEach((p,i)=>p.classList.toggle('on',i===n));
+  document.querySelectorAll('.nbtn').forEach((b,i)=>b.classList.toggle('on',i===n));
+  if(n===4)buildSum();
+  if(n===6)loadAprv('pending');
+  if(n===7)loadUsrs();
+  if(n===8)loadMeus();
+  window.scrollTo(0,0);
+}
+
+// TOGGLES
+const TV={};
+function tog(id,val,cls){
+  TV[id]=val;
+  document.getElementById(id).querySelectorAll('.togb').forEach(b=>b.classList.remove('s','n'));
+  document.getElementById(id).querySelectorAll('.togb')[cls==='s'?0:1]?.classList.add(cls);
+  const m={
+    'tped':()=>document.getElementById('ped-x').style.display=val==='Sim'?'':'none',
+    'tsp':()=>document.getElementById('ped-vw').style.display=val==='Não'?'':'none',
+    'tcb':()=>document.getElementById('cb-x').style.display=val==='Sim'?'':'none',
+    'test':()=>document.getElementById('est-x').style.display=val==='Sim'?'':'none',
+    'tepc':()=>document.getElementById('epc-x').style.display=val==='Sim'?'':'none',
+    'tlav':()=>document.getElementById('lav-x').style.display=val==='Sim'?'':'none',
+  };
+  if(m[id])m[id]();
+}
+
+// DIAS
+let nd=0;
+function addDia(){
+  nd++;const d=nd;const c=document.getElementById('dc');
+  const div=document.createElement('div');div.className='drow';div.id='d'+d;
+  div.innerHTML=`<div class="dhead"><span class="dlbl">📅 Dia ${d}</span><span class="lbadge">⚠ Acima</span><span class="dtot" id="td${d}">R$ 0,00</span></div>
+  <div class="r2" style="margin-bottom:8px"><div><label class="fl">Data</label><input type="date" id="dd${d}" onchange="cdia(${d})"/></div><div><label class="fl">Obs.</label><input type="text" id="do${d}" placeholder="opcional"/></div></div>
+  <div class="mg">
+    <div><label class="fl">☕ Café Manhã</label><input type="number" id="dc${d}" placeholder="0,00" min="0" step="0.01" oninput="cdia(${d})"/></div>
+    <div><label class="fl">🍽 Almoço</label><input type="number" id="da${d}" placeholder="0,00" min="0" step="0.01" oninput="cdia(${d})"/></div>
+    <div><label class="fl">🫖 Café Tarde</label><input type="number" id="dct${d}" placeholder="0,00" min="0" step="0.01" oninput="cdia(${d})"/></div>
+    <div><label class="fl">🌙 Jantar</label><input type="number" id="dj${d}" placeholder="0,00" min="0" step="0.01" oninput="cdia(${d})"/></div>
+  </div>
+  <label class="fl" style="margin-top:8px">Comprovantes *</label>
+  <div class="fzone" id="fz-d${d}"><input type="file" accept="image/*,application/pdf" multiple onchange="addF('d${d}',this)"/><div class="fi">📷</div><div class="ft">Foto dos recibos</div></div>
+  <div class="fts" id="ft-d${d}"></div>
+  ${d>1?`<button onclick="document.getElementById('d${d}').remove()" style="margin-top:7px;background:none;border:none;color:#c00000;font-size:11px;cursor:pointer;font-weight:700">🗑 Remover</button>`:''}`;
+  c.appendChild(div);
+  const sa=document.getElementById('fsa').value;
+  if(sa){const dt=new Date(sa);dt.setDate(dt.getDate()+d-1);document.getElementById('dd'+d).value=dt.toISOString().split('T')[0];}
+}
+function cdia(d){
+  const t=gv('dc'+d)+gv('da'+d)+gv('dct'+d)+gv('dj'+d);
+  const e=document.getElementById('td'+d);if(e)e.textContent='R$ '+t.toFixed(2).replace('.',',');
+  document.getElementById('d'+d)?.classList.toggle('ac',t>LIM);
+}
+
+// EXTRAS
+let ne=0;
+function addExt(){
+  ne++;const e=ne;const c=document.getElementById('ec');
+  const div=document.createElement('div');div.className='drow';div.id='e'+e;
+  div.innerHTML=`<div style="display:flex;justify-content:space-between;margin-bottom:6px"><b style="font-size:12px;color:#1F3864">📌 Despesa ${e}</b><button onclick="document.getElementById('e${e}').remove()" style="background:none;border:none;color:#c00000;font-size:11px;cursor:pointer;font-weight:700">🗑</button></div>
+  <label class="fl">Descrição *</label><input type="text" id="ed${e}" placeholder="Ex.: Táxi"/>
+  <div class="r2"><div><label class="fl">Valor (R$)</label><input type="number" id="ev${e}" placeholder="0,00" min="0" step="0.01"/></div><div><label class="fl">Data</label><input type="date" id="edt${e}"/></div></div>
+  <label class="fl">Comprovante *</label>
+  <div class="fzone" id="fz-e${e}"><input type="file" accept="image/*,application/pdf" multiple onchange="addF('e${e}',this)"/><div class="fi">📷</div><div class="ft">Foto</div></div>
+  <div class="fts" id="ft-e${e}"></div>`;
+  c.appendChild(div);
+}
+
+// FOTOS
+const FS={};
+function addF(k,inp){
+  if(!FS[k])FS[k]=[];
+  const ct=document.getElementById('ft-'+k);
+  Array.from(inp.files).forEach(f=>{
+    const r=new FileReader();
+    r.onload=ev=>{
+      const b=ev.target.result,idx=FS[k].length;
+      FS[k].push({name:f.name,b64:b,type:f.type});
+      if(f.type.startsWith('image/')){
+        const w=document.createElement('div');w.className='fmini';
+        w.innerHTML=`<img src="${b}"/><button class="fdel" onclick="FS['${k}'].splice(${idx},1);this.parentNode.remove()">×</button>`;
+        ct.appendChild(w);
+      }else{
+        const bd=document.createElement('div');
+        bd.style.cssText='display:flex;align-items:center;gap:5px;background:#d9e1f2;border-radius:5px;padding:5px 9px;font-size:10px;color:#1F3864;font-weight:600;margin-top:3px';
+        bd.innerHTML=`📄 ${f.name}<button onclick="FS['${k}'].splice(${idx},1);this.parentNode.remove()" style="margin-left:auto;background:none;border:none;color:#c00000;cursor:pointer;font-size:13px">×</button>`;
+        ct.appendChild(bd);
+      }
+      document.getElementById('fz-'+k)?.classList.remove('preq');
+    };r.readAsDataURL(f);
+  });inp.value='';
+}
+
+// RESUMO
+function buildSum(){
+  const nome=document.getElementById('fn').value||'—',cli=document.getElementById('fc').value||'—';
+  document.getElementById('ri').innerHTML=`<b>${nome}</b> → ${cli}<br>${fd(document.getElementById('fsa').value)} a ${fd(document.getElementById('fre').value)}`;
+  const ped=TV['tsp']==='Não'?gv('vped'):0,comb=gv('vcb'),est=gv('vest'),epc=gv('vepc'),lav=gv('vlav');
+  let rf=0,alts=[],rd='';
+  for(let d=1;d<=nd;d++){
+    if(!document.getElementById('d'+d))continue;
+    const t=gv('dc'+d)+gv('da'+d)+gv('dct'+d)+gv('dj'+d);rf+=t;
+    const ov=t>LIM;
+    if(ov)alts.push(`${fd(document.getElementById('dd'+d)?.value)}: R$ ${t.toFixed(2)} (+R$ ${(t-LIM).toFixed(2)})`);
+    rd+=`<tr><td class="cat">🍽 ${fd(document.getElementById('dd'+d)?.value)}</td><td class="val" style="color:${ov?'#c00000':'inherit'}">${ov?'⚠ ':''}R$ ${t.toFixed(2).replace('.',',')}</td></tr>`;
+  }
+  let et=0,re='';
+  for(let e=1;e<=ne;e++){
+    if(!document.getElementById('e'+e))continue;
+    const v=gv('ev'+e),desc=document.getElementById('ed'+e)?.value||'Despesa '+e;
+    et+=v;re+=`<tr><td class="cat">📌 ${desc}</td><td class="val">R$ ${v.toFixed(2).replace('.',',')}</td></tr>`;
+  }
+  const pend=est+epc+lav+et,total=ped+comb+rf+pend;
+  document.getElementById('rb').innerHTML=`
+    <tr><td colspan="2" style="font-weight:800;font-size:10px;color:#888;padding:5px 11px;background:#e8edf5">TRANSPORTE</td></tr>
+    <tr><td class="cat">🛣 Pedágio</td><td class="val">R$ ${ped.toFixed(2).replace('.',',')}</td></tr>
+    <tr><td class="cat">⛽ Combustível</td><td class="val">R$ ${comb.toFixed(2).replace('.',',')}</td></tr>
+    <tr><td colspan="2" style="font-weight:800;font-size:10px;color:#888;padding:5px 11px;background:#e8edf5">REFEIÇÕES</td></tr>
+    ${rd||'<tr><td colspan="2" class="cat" style="text-align:center">Nenhum dia</td></tr>'}
+    <tr><td colspan="2" style="font-weight:800;font-size:10px;color:#7f4f00;padding:5px 11px;background:#fff2cc">⏳ PENDENTES</td></tr>
+    <tr><td class="cat">🏨 Estadia</td><td class="val">R$ ${est.toFixed(2).replace('.',',')}</td></tr>
+    <tr><td class="cat">🅿 Estacionamento</td><td class="val">R$ ${epc.toFixed(2).replace('.',',')}</td></tr>
+    <tr><td class="cat">👕 Lavanderia</td><td class="val">R$ ${lav.toFixed(2).replace('.',',')}</td></tr>
+    ${re}
+    <tr class="tot"><td>TOTAL GERAL</td><td class="val">R$ ${total.toFixed(2).replace('.',',')}</td></tr>`;
+  const ab=document.getElementById('abox');
+  if(alts.length){ab.style.display='';document.getElementById('abody').innerHTML=alts.map(a=>`<div style="margin-bottom:6px;padding:7px;background:#ffcccc;border-radius:5px">⚠️ ${a}</div>`).join('');}
+  else ab.style.display='none';
+}
+
+// ASSINATURA
+let sigOk=false,draw=false;
+function initSig(){
+  const c=document.getElementById('sigc'),ctx=c.getContext('2d');
+  function rsz(){c.width=c.parentElement.clientWidth-28;ctx.clearRect(0,0,c.width,c.height);}
+  rsz();window.addEventListener('resize',rsz);
+  const p=e=>{const r=c.getBoundingClientRect(),s=e.touches?e.touches[0]:e;return{x:s.clientX-r.left,y:s.clientY-r.top}};
+  c.addEventListener('mousedown',e=>{draw=true;ctx.beginPath();const q=p(e);ctx.moveTo(q.x,q.y)});
+  c.addEventListener('mousemove',e=>{if(!draw)return;const q=p(e);ctx.lineTo(q.x,q.y);ctx.strokeStyle='#1F3864';ctx.lineWidth=2;ctx.lineCap='round';ctx.stroke();sigOk=true});
+  c.addEventListener('mouseup',()=>draw=false);
+  c.addEventListener('touchstart',e=>{e.preventDefault();draw=true;ctx.beginPath();const q=p(e);ctx.moveTo(q.x,q.y)},{passive:false});
+  c.addEventListener('touchmove',e=>{e.preventDefault();if(!draw)return;const q=p(e);ctx.lineTo(q.x,q.y);ctx.strokeStyle='#1F3864';ctx.lineWidth=2.5;ctx.lineCap='round';ctx.stroke();sigOk=true},{passive:false});
+  c.addEventListener('touchend',()=>draw=false);
+}
+function lsig(){const c=document.getElementById('sigc');c.getContext('2d').clearRect(0,0,c.width,c.height);sigOk=false}
+function nsig(){
+  const c=document.getElementById('sigc'),ctx=c.getContext('2d');
+  ctx.clearRect(0,0,c.width,c.height);ctx.font='italic 28px Georgia';ctx.fillStyle='#1F3864';
+  ctx.fillText(document.getElementById('fn').value||'Colaborador',16,90);sigOk=true;
+}
+
+// SEQUÊNCIA
+async function nextNum(unid){
+  const k=unid==='Araraquara'?'ARA':'UBE';
+  try{
+    const{data,error}=await db.rpc('increment_sequence',{seq_id:k});
+    if(!error&&data)return unid==='Araraquara'?`VA2026-${data}`:`VU2026-${String(data).padStart(2,'0')}`;
+  }catch(e){console.warn(e);}
+  const{data:row}=await db.from('mm_sequences').select('current_val').eq('id',k).single();
+  const nv=(row?.current_val||0)+1;
+  await db.from('mm_sequences').update({current_val:nv}).eq('id',k);
+  return unid==='Araraquara'?`VA2026-${nv}`:`VU2026-${String(nv).padStart(2,'0')}`;
+}
+
+// VALIDAR
+function validar(){
+  const errs=[];
+  if(!document.getElementById('fu').value)errs.push('Unidade');
+  if(!document.getElementById('fn').value.trim())errs.push('Nome');
+  if(!document.getElementById('fc').value.trim())errs.push('Cliente/Destino');
+  if(!document.getElementById('fsa').value)errs.push('Data de saída');
+  if(!document.getElementById('fre').value)errs.push('Data de retorno');
+  if(!sigOk)errs.push('Assinatura');
+  [{c:TV['tsp']==='Não'&&gv('vped')>0,k:'ped',l:'Pedágio'},
+   {c:TV['tcb']==='Sim'&&gv('vcb')>0,k:'cb',l:'Combustível'},
+   {c:TV['test']==='Sim'&&gv('vest')>0,k:'est',l:'Estadia'},
+   {c:TV['tepc']==='Sim'&&gv('vepc')>0,k:'epc',l:'Estacionamento'},
+   {c:TV['tlav']==='Sim'&&gv('vlav')>0,k:'lav',l:'Lavanderia'},
+  ].forEach(x=>{if(x.c&&(!FS[x.k]||!FS[x.k].length)){errs.push('Comprovante: '+x.l);document.getElementById('fz-'+x.k)?.classList.add('preq');}});
+  for(let d=1;d<=nd;d++){
+    if(!document.getElementById('d'+d))continue;
+    const t=gv('dc'+d)+gv('da'+d)+gv('dct'+d)+gv('dj'+d);
+    if(t>0&&(!FS['d'+d]||!FS['d'+d].length)){errs.push('Comprovante Dia '+d);document.getElementById('fz-d'+d)?.classList.add('preq');}
+  }
+  return errs;
+}
+
+function montarDados(){
+  const f=id=>document.getElementById(id)?.value||'';
+  let dias=[];
+  for(let d=1;d<=nd;d++){
+    if(!document.getElementById('d'+d))continue;
+    dias.push({data:f('dd'+d),cafe:gv('dc'+d),almoco:gv('da'+d),cafeTarde:gv('dct'+d),jantar:gv('dj'+d),obs:f('do'+d)});
+  }
+  let extras=[];
+  for(let e=1;e<=ne;e++){
+    if(!document.getElementById('e'+e))continue;
+    extras.push({desc:f('ed'+e),val:gv('ev'+e),data:f('edt'+e)});
+  }
+  const ped=TV['tsp']==='Não'?gv('vped'):0,comb=gv('vcb'),est=gv('vest'),epc=gv('vepc'),lav=gv('vlav');
+  const rf=dias.reduce((s,d)=>s+d.cafe+d.almoco+d.cafeTarde+d.jantar,0);
+  const et=extras.reduce((s,x)=>s+x.val,0),pend=est+epc+lav+et;
+  return{unidade:f('fu'),nome:f('fn'),cliente:f('fc'),saida:f('fsa'),retorno:f('fre'),objetivo:f('fob'),
+    pedagio:{ocorreu:TV['tped']||'—',semParar:TV['tsp']||'—',valor:ped},
+    comb:{ocorreu:TV['tcb']||'—',valor:comb},dias,extras,
+    estadia:{ocorreu:TV['test']||'—',valor:est,obs:f('oest')},
+    estac:{ocorreu:TV['tepc']||'—',valor:epc},lav:{ocorreu:TV['tlav']||'—',valor:lav},
+    totais:{transporte:ped+comb,refeicoes:rf,pendentes:pend,geral:ped+comb+rf+pend},
+    assinatura:document.getElementById('sigc').toDataURL('image/png')};
+}
+
+function stbox(t,msg,sub){
+  const b=document.getElementById('sb');b.className='sbox on '+t;
+  document.getElementById('si').textContent={ld:'⏳',ok:'✅',er:'❌'}[t]||'';
+  document.getElementById('sm').textContent=msg;
+  document.getElementById('ss').innerHTML=sub.replace(/\n/g,'<br>');
+  b.scrollIntoView({behavior:'smooth'});
+}
+
+async function enviar(){
+  const errs=validar();
+  if(errs.length){stbox('er','❌ Obrigatórios',errs.map(e=>'• '+e).join('\n'));return}
+  const u=sess();
+  stbox('ld','⏳ Salvando...','Aguarde...');
+  document.getElementById('benv').disabled=true;
+  const ok=await loadSB();
+  if(!ok){stbox('er','❌ Sem conexão','Verifique sua internet.');document.getElementById('benv').disabled=false;return}
+  try{
+    const d=montarDados();
+    const num=await nextNum(d.unidade);
+    const ts=now();
+    const{error}=await db.from('mm_reports').insert({
+      id:num,unit:d.unidade,author_email:u.email,author_name:u.nome,
+      status:'pending',data:d,log:[{acao:'Enviado',usuario:u.nome,email:u.email,em:ts,detalhe:`Relatório ${num} submetido.`}],
+      admin_note:'',created_at:ts,updated_at:ts
+    });
+    if(error){stbox('er','❌ Erro: '+error.message,'');document.getElementById('benv').disabled=false;return}
+    const nw=document.getElementById('nwrap');nw.style.display='';
+    nw.innerHTML=`<div class="nbadge">📄 ${num} <span style="font-size:10px;opacity:.8">${d.unidade}</span></div>`;
+    stbox('ok','✅ '+num+' enviado!','Acompanhe a aprovação em "📋 Meus".');
+  }catch(e){stbox('er','❌ Erro: '+e.message,'');document.getElementById('benv').disabled=false;console.error(e);}
+}
+
+// APROVAÇÃO
+async function loadAprv(f){
+  const el=document.getElementById('laprv');
+  el.innerHTML='<div style="text-align:center;color:#888;padding:20px;font-size:12px">Carregando...</div>';
+  const ok=await loadSB();if(!ok){el.innerHTML='Erro de conexão.';return}
+  let q=db.from('mm_reports').select('*').order('created_at',{ascending:false});
+  if(f&&f!=='all')q=q.eq('status',f);
+  const{data,error}=await q;
+  if(error||!data||!data.length){el.innerHTML='<div style="text-align:center;color:#888;padding:30px;font-size:12px">Nenhum relatório.</div>';return}
+  const lb={pending:'⏳ Aguardando',approved:'✅ Aprovado',rejected:'❌ Reprovado'};
+  el.innerHTML='';
+  data.forEach(r=>{
+    const ov=(r.data.dias||[]).filter(d=>d.cafe+d.almoco+d.cafeTarde+d.jantar>LIM);
+    const div=document.createElement('div');div.className='acard';
+    div.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
+      <div><div class="anum">${r.id}</div><div class="ameta">${r.author_name} · ${r.unit} · ${fdt(r.created_at)}</div></div>
+      <span class="chip ${r.status}">${lb[r.status]||r.status}</span></div>
+      <div class="aln"><span>Colaborador</span><b>${r.data.nome}</b></div>
+      <div class="aln"><span>Cliente</span><b>${r.data.cliente}</b></div>
+      <div class="aln"><span>Período</span><b>${fd(r.data.saida)} → ${fd(r.data.retorno)}</b></div>
+      <div class="aln"><span>Transporte</span><b>R$ ${r.data.totais.transporte.toFixed(2)}</b></div>
+      <div class="aln"><span>Refeições</span><b style="color:${ov.length?'#c00000':'inherit'}">R$ ${r.data.totais.refeicoes.toFixed(2)}${ov.length?' ⚠':''}</b></div>
+      <div class="aln"><span>Pendentes</span><b>R$ ${r.data.totais.pendentes.toFixed(2)}</b></div>
+      <div class="aln" style="border:none"><span>TOTAL</span><b style="font-size:15px;color:#1F3864">R$ ${r.data.totais.geral.toFixed(2)}</b></div>
+      ${ov.length?`<div style="background:#ffcccc;border-radius:6px;padding:8px;font-size:11px;color:#c00000;margin:6px 0">⚠️ ${ov.length} dia(s) acima de R$ 120,00</div>`:''}
+      <textarea class="anota" id="nt-${r.id}" placeholder="Observação (aparece para o colaborador)">${r.admin_note||''}</textarea>
+      <div class="abtns">
+        <button class="btn bg_" onclick="decidir('${r.id}','approved')">✅ Aprovar</button>
+        <button class="btn br_" onclick="decidir('${r.id}','rejected')">❌ Reprovar</button>
+        <button class="btn bs" style="flex:.6" onclick="(function(){const e=document.getElementById('lg-${r.id}');e.style.display=e.style.display==='none'?'':'none'})()">📋 Log</button>
+      </div>
+      <div id="lg-${r.id}" style="display:none;margin-top:10px;border-top:1px solid #e8edf5;padding-top:8px">
+        ${(r.log||[]).map(l=>`<div class="lrow"><span class="la">${l.acao||l.action}</span>${(l.detalhe||l.detail)?' — '+(l.detalhe||l.detail):''}<div class="lt">👤 ${l.usuario||l.user} · ${fdt(l.em||l.at)}</div></div>`).join('')}
+      </div>`;
+    el.appendChild(div);
+  });
+}
+
+async function decidir(id,status){
+  const u=sess(),nota=document.getElementById('nt-'+id)?.value||'',ts=now();
+  const{data:cur}=await db.from('mm_reports').select('status,log').eq('id',id).single();
+  const log=[...(cur?.log||[]),{acao:status==='approved'?'Aprovado':'Reprovado',usuario:u?.nome||'Admin',email:ADMIN,em:ts,detalhe:`De "${cur?.status}" para "${status}".${nota?' Obs: '+nota:''}`}];
+  await db.from('mm_reports').update({status,admin_note:nota,log,updated_at:ts}).eq('id',id);
+  loadAprv('all');
+}
+
+// MEUS
+async function loadMeus(){
+  const u=sess(),el=document.getElementById('lmeus');
+  el.innerHTML='<div style="text-align:center;color:#888;padding:20px;font-size:12px">Carregando...</div>';
+  const ok=await loadSB();if(!ok){el.innerHTML='Erro de conexão.';return}
+  let q=db.from('mm_reports').select('*').order('created_at',{ascending:false});
+  if(u.role!=='admin')q=q.eq('author_email',u.email);
+  const{data,error}=await q;
+  if(error||!data||!data.length){el.innerHTML='<p style="text-align:center;color:#888;padding:20px;font-size:12px">Nenhum relatório ainda.</p>';return}
+  const lb={pending:'⏳ Aguardando',approved:'✅ Aprovado',rejected:'❌ Reprovado'};
+  el.innerHTML=data.map(r=>`
+    <div class="rcard" onclick="verRep('${r.id}')">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div><div class="rn">${r.id}</div><div class="ri">${r.data.nome} · ${r.data.cliente}</div><div class="ri">${fd(r.data.saida)} → ${fd(r.data.retorno)} · R$ ${r.data.totais.geral.toFixed(2)}</div></div>
+        <span class="chip ${r.status}">${lb[r.status]||r.status}</span>
+      </div>
+      ${r.admin_note?`<div style="margin-top:8px;font-size:11px;color:#7f4f00;background:#fff2cc;border-radius:5px;padding:6px">💬 "${r.admin_note}"</div>`:''}
+      <div style="margin-top:6px;font-size:10px;color:#aaa">Atualizado: ${fdt(r.updated_at)}</div>
+    </div>`).join('');
+}
+
+async function verRep(id){
+  const el=document.getElementById('lmeus');
+  el.innerHTML='<div style="text-align:center;color:#888;padding:20px">Carregando...</div>';
+  const{data:r}=await db.from('mm_reports').select('*').eq('id',id).single();
+  if(!r){el.innerHTML='Erro.';return}
+  const lb={pending:'⏳ Aguardando aprovação',approved:'✅ Aprovado pelo Gestor',rejected:'❌ Reprovado pelo Gestor'};
+  el.innerHTML=`<button onclick="loadMeus()" style="background:none;border:none;color:#2E5FA3;font-weight:700;cursor:pointer;font-size:13px;margin-bottom:10px">← Voltar</button>
+    <div class="sbanner ${r.status}"><div class="sbt">${lb[r.status]}</div>${r.admin_note?`<div class="sbs">💬 "${r.admin_note}"</div>`:'<div class="sbs">Aguardando análise.</div>'}</div>
+    <div class="card"><div class="ctopo">${r.id} · ${r.unit}</div><div class="ccorpo">
+      <table class="stbl">
+        <tr><td class="cat">Colaborador</td><td class="val">${r.data.nome}</td></tr>
+        <tr><td class="cat">Cliente</td><td class="val">${r.data.cliente}</td></tr>
+        <tr><td class="cat">Período</td><td class="val">${fd(r.data.saida)} → ${fd(r.data.retorno)}</td></tr>
+        <tr><td class="cat">Transporte</td><td class="val">R$ ${r.data.totais.transporte.toFixed(2)}</td></tr>
+        <tr><td class="cat">Refeições</td><td class="val">R$ ${r.data.totais.refeicoes.toFixed(2)}</td></tr>
+        <tr><td class="cat">Pendentes</td><td class="val">R$ ${r.data.totais.pendentes.toFixed(2)}</td></tr>
+        <tr class="tot"><td>TOTAL</td><td class="val">R$ ${r.data.totais.geral.toFixed(2)}</td></tr>
+      </table>
+    </div></div>
+    <div class="card"><div class="ctopo">📋 Log de Alterações</div><div class="ccorpo">
+      ${(r.log||[]).map(l=>`<div class="lrow"><span class="la">${l.acao||l.action}</span>${(l.detalhe||l.detail)?' — '+(l.detalhe||l.detail):''}<div class="lt">👤 ${l.usuario||l.user} · ${fdt(l.em||l.at)}</div></div>`).join('')}
+    </div></div>`;
+}
+
+// CONFIG
+function salvarCfg(){localStorage.setItem('mm_pk',document.getElementById('cpk').value);localStorage.setItem('mm_sv',document.getElementById('csv').value);localStorage.setItem('mm_tp',document.getElementById('ctp').value);alert('✅ Salvo!');}
+function loadCfg(){['pk','sv','tp'].forEach(k=>{const v=localStorage.getItem('mm_'+k);const e=document.getElementById('c'+k);if(v&&e)e.value=v;});}
+
+async function loadUsrs(){
+  const el=document.getElementById('lusr');if(!el)return;
+  const ok=await loadSB();if(!ok){el.innerHTML='Erro.';return}
+  const{data}=await db.from('mm_users').select('*').order('created_at',{ascending:false});
+  if(!data||!data.length){el.innerHTML='<p style="font-size:12px;color:#888">Nenhum colaborador.</p>';return}
+  el.innerHTML=data.map(u=>`<div style="display:flex;align-items:center;gap:8px;padding:9px;background:#f7f9fc;border-radius:7px;margin-bottom:6px;border:1.5px solid #e8edf5">
+    <div style="width:34px;height:34px;border-radius:50%;background:#4472C4;color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center">${u.name.charAt(0).toUpperCase()}</div>
+    <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:12px;color:#1F3864">${u.name} · ${u.unit}</div><div style="font-size:10px;color:#888">${u.email}</div></div>
+    <button onclick="db.from('mm_users').delete().eq('id','${u.id}').then(()=>loadUsrs())" style="background:none;border:none;color:#c00000;cursor:pointer;font-size:16px;padding:4px">🗑</button>
+  </div>`).join('');
+}
+
+// INIT
+window.addEventListener('DOMContentLoaded',()=>{
+  const u=sess();
+  if(u)iniciar();
+});
+</script>
+</body>
+</html>
